@@ -69,10 +69,11 @@ const styles = StyleSheet.create({
     color: '#000',
     textDecorationLine: 'underline',
     marginVertical: 10,
+    marginBottom: 30,
   },
   createAccount: {
     color: '#000',
-    marginTop: 50,
+    marginTop: 80,
   },
   createLink: {
     color: '#4169e1',

@@ -1,20 +1,20 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Link } from 'expo-router';
-import styles from '../styles/homestyles'; // Ensure to create your own styles
+import styles from '../styles/homestyles';
 
 const HomeScreen = () => {
   return (
     <View style={styles.container}>
       {/* Logo Section */}
       <View style={styles.logoContainer}>
-        <Image source={require('../screen/images/logo.png')} style={styles.logo} />
+        <Image source={require('./images/logo.png')} style={styles.logo} />
       </View>
 
       {/* Menu Tabs */}
       <View style={styles.menuTabs}>
         <TouchableOpacity style={styles.tabButton}>
-          <Image source={require('../screen/images/menu-burger.png')} style={styles.menuIcon} />
+          <Image source={require('./images/menu-burger.png')} style={styles.menuIcon} />
         </TouchableOpacity>
         {['All', 'Work', 'B-day', 'Occasion', 'Special'].map((tab) => (
           <TouchableOpacity key={tab} style={styles.tabButton}>
@@ -32,19 +32,19 @@ const HomeScreen = () => {
       <View style={styles.bottomTabBar}>
         <Link href="/screen/home" style={styles.bottomTabButtonLeft}>
           <View style={styles.iconContainer}>
-            <Image source={require('../screen/images/bell.png')} style={styles.bottomTabIcon} />
+            <Image source={require('./images/whitebell.png')} style={styles.bottomTabIcon} />
             <Text style={styles.bottomTabText}>Reminders</Text>
           </View>
         </Link>
-        <Link href="/screen/calendar" style={styles.bottomTabButtonLeft}>
+        <Link href="/screen/calendar" style={styles.bottomTabButtonCenter}>
           <View style={styles.iconContainer}>
-            <Image source={require('../screen/images/calendar-day.png')} style={styles.bottomTabIcon} />
+            <Image source={require('./images/calendar-day.png')} style={styles.bottomTabIcon} />
             <Text style={styles.bottomTabText}>Calendar</Text>
           </View>
         </Link>
-        <Link href="/screen/profile" style={styles.bottomTabButtonLeft}>
+        <Link href="/screen/profileScreen" style={styles.bottomTabButtonRight}>
           <View style={styles.iconContainer}>
-            <Image source={require('../screen/images/user.png')} style={styles.bottomTabIcon} />
+            <Image source={require('./images/user.png')} style={styles.bottomTabIcon} />
             <Text style={styles.bottomTabText}>Profile</Text>
           </View>
         </Link>

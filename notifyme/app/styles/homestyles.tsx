@@ -1,11 +1,17 @@
 import { StyleSheet } from 'react-native';
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#A8D8E4', // Background color
     alignItems: 'center',
     paddingTop: 20,
+  },
+  calendarContainer: {
+    backgroundColor: '#A8D8E4',
+    borderRadius: 8,
+    padding:  16,
   },
   logoContainer: {
     alignItems: 'center',
@@ -15,7 +21,7 @@ const styles = StyleSheet.create({
     width: 200, 
     height: 100, 
     marginRight: 200,
-    marginTop: 30,
+    marginTop: -10,
     marginBottom: 20,
   },
   menuTabs: {
@@ -27,7 +33,6 @@ const styles = StyleSheet.create({
   tabButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: '#FFF',
     borderRadius: 20,
     marginRight: 10, // Space between tabs
     marginTop: -50
@@ -48,32 +53,37 @@ const styles = StyleSheet.create({
   },
   bottomTabBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Adjusted for spacing
-    backgroundColor: '#FFF',
-    paddingVertical: 10,
+    backgroundColor: '#A8D8E4',
+    paddingVertical: 23,
     width: '100%',
     position: 'absolute',
-    bottom: 0,
-    alignItems: 'center', // Center icons vertically
+    bottom: 1,
+    alignItems: 'center',
   },
   bottomTabButtonLeft: {
-    flex: 1, // Takes the available space
+    position: 'absolute',
+    left: 20, // Position the "Reminders" icon on the left side
     alignItems: 'center',
   },
   bottomTabButtonCenter: {
-    flex: 1, // Center button, takes the available space
+    position: 'absolute',
+    left: '47%', // Center the "Calendar" icon on the screen
     alignItems: 'center',
   },
   bottomTabButtonRight: {
-    flex: 1, // Takes the available space
+    position: 'absolute',
+    right: 20, // Position the "Profile" icon on the right side
     alignItems: 'center',
+  },
+  reminderbottomTabText: {
+    color:'#FFFFFF'
   },
   bottomTabText: {
     color: '#000',
   },
   bottomTabIcon: {
-    width: 24, // Adjust icon size
-    height: 24, // Adjust icon size
+    width: 24,
+    height: 24,
   },
   iconContainer: {
     alignItems: 'center', // Centers icons and text vertically
@@ -81,17 +91,19 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 80,
-    backgroundColor: '#1E90FF',
-    width: 60,
-    height: 60,
+    bottom: 70,
+    backgroundColor: '#0B6477',
+    width: 50,
+    height: 50,
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },
   fabText: {
-    color: '#FFF',
-    fontSize: 30,
+    color: '#black',
+    fontSize: 40,
+    alignContent: 'center',
+    alignItems: 'center',
   },
 });
 
