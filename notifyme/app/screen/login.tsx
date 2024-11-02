@@ -4,7 +4,6 @@ import { Link, useRouter } from 'expo-router';
 import styles from '../styles/loginstyles';
 import { supabase } from '../../supabase';
 
-
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +12,7 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const { data, error } = await supabase
-        .from('profiles') // Change this if your user table is named differently
+        .from('profiles')
         .select('*')
         .or(`email.eq.${email}, username.eq.${email}`)
         .single();
@@ -24,8 +23,7 @@ const LoginScreen = () => {
         return;
       }
 
-      // If successful, navigate to the home screen (Reminders tab)
-      router.push('/screen/home'); // Adjust the route to match your home screen path
+      router.push('/screen/home');
     } catch (error) {
       console.error('Unexpected error:', error);
       alert('Something went wrong. Please try again.');
@@ -60,14 +58,21 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
-      </TouchableOpacity>
-      <Link href="/screen/register">
-        <Text style={styles.createAccount}>
-          Don’t have an account? <Text style={styles.createLink}>Create here</Text>
-        </Text>
-      </Link>
+      
+      {/* Add spacing by using separate View containers */}
+      <View style={{ marginVertical: 20 }}>
+        <Link href="/screen/password">
+          <Text style={styles.forgotPassword}>Forgot Password?</Text>
+        </Link>
+      </View>
+
+      <View style={{ marginTop: 50 }}>
+        <Link href="/screen/register">
+          <Text style={styles.createAccount}>
+            Don’t have an account? <Text style={styles.createLink}>Create here</Text>
+          </Text>
+        </Link>
+      </View>
     </View>
   );
 };

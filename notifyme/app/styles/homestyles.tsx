@@ -8,11 +8,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 20,
   },
-  calendarContainer: {
-    backgroundColor: '#A8D8E4',
-    borderRadius: 8,
-    padding:  16,
-  },
   logoContainer: {
     alignItems: 'center',
     marginBottom: 20,
@@ -74,9 +69,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20, // Position the "Profile" icon on the right side
     alignItems: 'center',
-  },
-  reminderbottomTabText: {
-    color:'#FFFFFF'
   },
   bottomTabText: {
     color: '#000',
