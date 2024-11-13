@@ -45,6 +45,66 @@ const styles = StyleSheet.create({
   profileText: {
     color: 'black'
   },
+    profileSection: {
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    avatar: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: '#00FF9D',
+    },
+    username: {
+      fontSize: 18,
+      marginTop: 10,
+    },
+    filterSection: {
+      marginTop: 20,
+      padding: 15,
+      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+      borderRadius: 10,
+    },
+    filterLabel: {
+      fontSize: 16,
+    },
+    filterOptions: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      marginTop: 10,
+    },
+    filterOption: {
+      marginLeft: 10,
+      padding: 5,
+      backgroundColor: 'rgba(0, 0, 0, 0.1)',
+      borderRadius: 5,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      marginTop: 20,
+      marginBottom: 10,
+    },
+    overviewContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginTop: 10,
+    },
+    overviewBox: {
+      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+      padding: 20,
+      borderRadius: 10,
+      alignItems: 'center',
+      width: '45%',
+    },
+    overviewNumber: {
+      fontSize: 24,
+      fontWeight: 'bold',
+    },
+    overviewLabel: {
+      marginTop: 5,
+    },
+  
+
 });
 
 

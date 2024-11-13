@@ -8,8 +8,37 @@ const ProfileScreen = () => {
     
   return (
     <View style={styles.container}>
-      <Text style={styles.profileText}>Profile Screen</Text>
-      {/* Add more profile content here */}
+      {/* User Profile Section */}
+      <View style={styles.profileSection}>
+        <Image 
+          source={require('../screen/images/avatar.png')} 
+          style={styles.avatar}
+        />
+        <Text style={styles.username}>Username</Text>
+      </View>
+
+      {/* Reminder Categories Filter */}
+      <View style={styles.filterSection}>
+        <Text style={styles.filterLabel}>Pending reminders in categories</Text>
+        <View style={styles.filterOptions}>
+          <Text style={styles.filterOption}>All</Text>
+          <Text style={styles.filterOption}>1 week</Text>
+          <Text style={styles.filterOption}>1 month</Text>
+        </View>
+      </View>
+
+      {/* Reminder Overview Section */}
+      <Text style={styles.sectionTitle}>Reminder Overview</Text>
+      <View style={styles.overviewContainer}>
+        <View style={styles.overviewBox}>
+          <Text style={styles.overviewNumber}>0</Text>
+          <Text style={styles.overviewLabel}>Completed</Text>
+        </View>
+        <View style={styles.overviewBox}>
+          <Text style={styles.overviewNumber}>0</Text>
+          <Text style={styles.overviewLabel}>Pending</Text>
+        </View>
+      </View>
 
       {/* Bottom Tab Bar */}
       <View style={styles.bottomTabBar}>

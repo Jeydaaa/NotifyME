@@ -52,7 +52,7 @@ const HomeScreen = () => {
             <Text style={styles.bottomTabText}>Calendar</Text>
           </View>
         </Link>
-        <Link href="/screen/profileScreen" style={styles.bottomTabButtonRight}>
+        <Link href="/screen/profile" style={styles.bottomTabButtonRight}>
           <View style={styles.iconContainer}>
             <Image source={require('./images/user.png')} style={styles.bottomTabIcon} />
             <Text style={styles.bottomTabText}>Profile</Text>
