@@ -1,11 +1,21 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Image, Animated } from 'react-native';
 import { Link } from 'expo-router';
 import styles from '../styles/homestyles';
 
 const HomeScreen = () => {
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
+  // Function to toggle sidebar visibility
+  const toggleSidebar = () => {
+    setIsSidebarVisible(!isSidebarVisible);
+  };
+
   return (
     <View style={styles.container}>
+      {/* Dim Background Overlay */}
+      {isSidebarVisible && <View style={styles.overlay} />}
+
       {/* Logo Section */}
       <View style={styles.logoContainer}>
         <Image source={require('./images/logo.png')} style={styles.logo} />
@@ -13,7 +23,7 @@ const HomeScreen = () => {
 
       {/* Menu Tabs */}
       <View style={styles.menuTabs}>
-        <TouchableOpacity style={styles.tabButton}>
+        <TouchableOpacity style={styles.tabButton} onPress={toggleSidebar}>
           <Image source={require('./images/menu-burger.png')} style={styles.menuIcon} />
         </TouchableOpacity>
         {['All', 'Work', 'B-day', 'Occasion', 'Special'].map((tab) => (
@@ -54,6 +64,29 @@ const HomeScreen = () => {
       <TouchableOpacity style={styles.fab}>
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
+
+      {/* Sidebar */}
+      {isSidebarVisible && (
+  <Animated.View style={styles.sidebar}>
+    {/* Top Section (20% of Sidebar Height) */}
+    <View style={styles.sidebarTop}>
+      <View style={styles.sidebarHeader}>
+        <Image source={require('./images/logo.png')} style={styles.sidebarLogo} />
+        <TouchableOpacity onPress={toggleSidebar}>
+          <Image source={require('./images/menu-burger.png')} style={styles.sidebarmenuIcon} />
+        </TouchableOpacity>
+      </View>
+    </View>
+
+    {/* Divider Line */}
+    <View style={styles.dividerLine} />
+
+    {/* Main Content (80% of Sidebar Height) */}
+    <View style={styles.sidebarContent}>
+      <Text style={styles.sidebarText}>Sidebar Content</Text>
+    </View>
+  </Animated.View>
+      )}
     </View>
   );
 };

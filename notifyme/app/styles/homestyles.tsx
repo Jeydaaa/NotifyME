@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -97,6 +98,64 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
   },
+
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
+    zIndex: 5, // Ensure overlay is above the main screen content
+  },
+  sidebar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    height: '100%',
+    width: '75%', // Covers 3/4 of the screen width
+    backgroundColor: '#fff',
+    zIndex: 10, // Ensures it appears above other components
+  },
+  sidebarTop: {
+    height: '20%', // Takes up 20% of the sidebar's height
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0', // Background color for top section
+  },
+  sidebarContent: {
+    height: '80%', // Takes up the remaining 80%
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sidebarLogo: {
+    width: 100, // Adjust logo size as needed
+    height: 100,
+    resizeMode: 'contain',
+  },
+  sidebarmenuIcon: {
+    width: 24,
+    height: 24,
+  },
+
+  dividerLine: {
+    height: 1,          // Thickness of the line
+    backgroundColor: '#ccc', // Color of the line, adjust as needed
+    width: '100%',      // Full width of the sidebar
+  },
+
+  sidebarHeader: {
+    flexDirection: 'row',       // Align items horizontally
+    justifyContent: 'space-between', // Space logo and button to opposite ends
+    alignItems: 'center',       // Center items vertically
+    paddingHorizontal: 10,
+  },
+
+  sidebarText: {
+    width: 30,
+    height: 30
+  }
+
 });
 
 export default styles;
