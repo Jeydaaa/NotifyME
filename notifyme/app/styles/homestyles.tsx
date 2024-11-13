@@ -114,14 +114,14 @@ const styles = StyleSheet.create({
     top: 0,
     height: '100%',
     width: '75%', // Covers 3/4 of the screen width
-    backgroundColor: '#fff',
+    backgroundColor: '#C5DEE3',
     zIndex: 10, // Ensures it appears above other components
   },
   sidebarTop: {
     height: '20%', // Takes up 20% of the sidebar's height
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0', // Background color for top section
+    backgroundColor: '#C5DEE3', // Background color for top section
   },
   sidebarContent: {
     height: '80%', // Takes up the remaining 80%
