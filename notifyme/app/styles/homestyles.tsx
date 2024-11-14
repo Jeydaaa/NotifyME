@@ -23,30 +23,108 @@ const styles = StyleSheet.create({
   menuTabs: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
-    marginBottom: 20,
-  },
-  tabButton: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginRight: 10, // Space between tabs
-    marginTop: -50
+    width: '100%',
   },
+  
+  menuButton: {
+    padding: 8,
+    marginLeft: 10,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
   menuIcon: {
-    width: 24, // Adjust icon size
-    height: 24, // Adjust icon size
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
+  
+  tabScrollView: {
+    flex: 1,
+  },
+  
+  tabScrollContent: {
+    paddingHorizontal: 10,
+  },
+  
+  tabButton: {
+    backgroundColor: '#D9D9D9',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  
+  activeTab: {
+    backgroundColor: '#0B6477',
+  },
+  
   tabText: {
-    color: '#000',
+    fontSize: 14,
+    color: '#666666',
   },
-  remindersContainer: {
+  
+  activeTabText: {
+    color: '#000000',
+    fontWeight: '500',
+  },
+  
+  moreOptionsButton: {
+    padding: 8,
+    marginRight: 10,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  moreOptionsIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
+
+  reminderHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
   },
+  
+  arrowIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 5,
+  },
+  
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 150, // Adjust this value as needed
+  },
+  
+  emptyStateText: {
+    textAlign: 'center',
+    color: '#666666',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  
   remindersText: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginLeft: -50,
   },
+
+  remindersContainer: {
+    marginBottom: 20,
+  },
+
+
+
   bottomTabBar: {
     flexDirection: 'row',
     backgroundColor: '#A8D8E4',
@@ -108,6 +186,80 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
     zIndex: 5, // Ensure overlay is above the main screen content
   },
+
+  sidebarScrollView: {
+    flex: 1,
+  },
+  
+  sidebarSection: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginLeft: 10,
+    flex: 1,
+  },
+  
+  sidebarIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+  
+  
+  arrowUp: {
+    transform: [{ rotate: '180deg' }],
+  },
+  
+  categoriesList: {
+    paddingLeft: 20,
+  },
+  
+  categoryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  
+  categoryIcon: {
+    width: 16,
+    height: 16,
+    resizeMode: 'contain',
+    marginRight: 10,
+  },
+  
+  categoryText: {
+    flex: 1,
+    fontSize: 14,
+  },
+  
+  categoryCount: {
+    fontSize: 14,
+    color: '#666666',
+  },
+  
+  sidebarButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  
+  sidebarButtonText: {
+    marginLeft: 10,
+    fontSize: 14,
+  },
+
+  
   sidebar: {
     position: 'absolute',
     left: 0,

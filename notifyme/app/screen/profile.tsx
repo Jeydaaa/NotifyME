@@ -50,13 +50,13 @@ const ProfileScreen = () => {
         </Link>
         <Link href="/screen/calendar" style={styles.bottomTabButtonCenter}>
           <View style={styles.iconContainer}>
-            <Image source={require('../screen/images/whitecalendar.png')} style={styles.bottomTabIcon} />
+            <Image source={require('../screen/images/calendar-day.png')} style={styles.bottomTabIcon} />
             <Text style={styles.bottomTabText}>Calendar</Text>
           </View>
         </Link>
         <Link href="/screen/profile" style={styles.bottomTabButtonRight}>
           <View style={styles.iconContainer}>
-            <Image source={require('../screen/images/user.png')} style={styles.bottomTabIcon} />
+            <Image source={require('../screen/images/whiteuser.png')} style={styles.bottomTabIcon} />
             <Text style={styles.bottomTabText}>Profile</Text>
           </View>
         </Link>
