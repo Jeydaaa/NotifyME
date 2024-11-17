@@ -47,27 +47,47 @@ const styles = StyleSheet.create({
     color: 'black'
   },
     profileSection: {
+      flexDirection: 'row',
       alignItems: 'center',
       marginTop: 20,
+      paddingHorizontal: 20,
     },
     avatar: {
-      width: 80,
-      height: 80,
-      borderRadius: 40,
-      backgroundColor: '#00FF9D',
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      backgroundColor: '#5CD3C8',
+      marginRight: 200,
     },
     username: {
-      fontSize: 18,
-      marginTop: 10,
+      fontSize: 16,
+      color: '#000',
     },
     filterSection: {
-      marginTop: 20,
+      width: '90%',
+      height: 250,
+      alignSelf: 'center',
+      backgroundColor: '#C5DEE3',
       padding: 15,
-      backgroundColor: 'rgba(255, 255, 255, 0.8)',
       borderRadius: 10,
+      marginVertical: 10,
+      position: 'relative',
     },
+    filterContainer: {
+      backgroundColor: '#C5DEE3',
+      borderRadius: 8,
+      marginTop: 5,
+      overflow: 'hidden',
+    },
+    
+    picker: {
+      height: 40,
+      width: '100%',
+    },
+
     filterLabel: {
       fontSize: 16,
+      color: '#000',
     },
     filterOptions: {
       flexDirection: 'row',
@@ -84,18 +104,21 @@ const styles = StyleSheet.create({
       fontSize: 18,
       marginTop: 20,
       marginBottom: 10,
+      alignSelf: 'flex-start',
+      marginLeft: 30,
     },
     overviewContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      justifyContent: 'center',
       marginTop: 10,
+      gap: 60,
     },
     overviewBox: {
-      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+      backgroundColor: '#C5DEE3',
       padding: 20,
       borderRadius: 10,
       alignItems: 'center',
-      width: '45%',
+      width: '40%',
     },
     overviewNumber: {
       fontSize: 24,
@@ -105,6 +128,44 @@ const styles = StyleSheet.create({
       marginTop: 5,
     },
   
+  dropdownButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 8,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+  },
+
+  dropdownIcon: {
+    position: 'absolute',
+    right: 15,
+    top: 15,
+  },
+
+  dropdownContent: {
+    position: 'absolute',
+    top: 40, // Adjusted to position below the icon
+    right: 15,
+    backgroundColor: '#0B6477',
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: 1000,
+  },
+
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+    width: 100,
+  },
 
 });
 

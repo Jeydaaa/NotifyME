@@ -1,30 +1,97 @@
 // ProfileScreen.tsx
-import React from 'react';
-import { View, Text, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, Platform } from 'react-native';
 import { Link } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import styles from '../styles/profilestyles';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const ProfileScreen = () => {
+  const [selectedFilter, setSelectedFilter] = useState('all');
+  const [profileImage, setProfileImage] = useState(require('../screen/images/avatar.png'));
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState('All');
+
+  // Image picker function
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImage({ uri: result.assets[0].uri });
+    }
+  };
+
+  const handleFilterSelect = (filter: React.SetStateAction<string>) => {
+    setSelectedFilter(filter);
+  };
+
   return (
     <View style={styles.container}>
       {/* User Profile Section */}
       <View style={styles.profileSection}>
-        <Image 
-          source={require('../screen/images/avatar.png')} 
-          style={styles.avatar}
-        />
-        <Text style={styles.username}>Username</Text>
+        <TouchableOpacity onPress={pickImage}>
+          <Image 
+            source={profileImage} 
+            style={styles.avatar}
+          />
+          <Text style={styles.username}>Username</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Reminder Categories Filter */}
       <View style={styles.filterSection}>
         <Text style={styles.filterLabel}>Pending reminders in categories</Text>
-        <View style={styles.filterOptions}>
-          <Text style={styles.filterOption}>All</Text>
-          <Text style={styles.filterOption}>1 week</Text>
-          <Text style={styles.filterOption}>1 month</Text>
-        </View>
+        
+        <TouchableOpacity 
+          style={styles.dropdownIcon}
+          onPress={() => setIsOpen(!isOpen)}>
+          <MaterialIcons 
+            name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+            size={24} 
+            color="black" 
+          />
+        </TouchableOpacity>
+        
+        {isOpen && (
+          <View style={styles.dropdownContent}>
+            <TouchableOpacity 
+              style={styles.dropdownItem}
+              onPress={() => {
+                setSelected('All');
+                setIsOpen(false);
+              }}>
+              <Text>All</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.dropdownItem}
+              onPress={() => {
+                setSelected('1 week');
+                setIsOpen(false);
+              }}>
+              <Text>1 week</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.dropdownItem}
+              onPress={() => {
+                setSelected('1 month');
+                setIsOpen(false);
+              }}>
+              <Text>1 month</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       {/* Reminder Overview Section */}
