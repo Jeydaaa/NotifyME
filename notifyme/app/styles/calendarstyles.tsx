@@ -6,8 +6,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#A8D8E4', // Background color
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 100,
   },
+  
   bottomTabBar: {
     flexDirection: 'row',
     backgroundColor: '#A8D8E4',
@@ -16,6 +17,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 1,
     alignItems: 'center',
+    marginBottom: 20,
   },
   bottomTabButtonLeft: {
     position: 'absolute',
@@ -48,6 +50,7 @@ const styles = StyleSheet.create({
   calendar: {
     width: 350,
     backgroundColor: '#A8D8E4',
+
   },
   noReminderText: {
     marginTop: 20,
@@ -62,7 +65,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#0B6477',
+    backgroundColor: '#0B647',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,

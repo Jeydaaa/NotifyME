@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     width: 200, 
     height: 100, 
     marginRight: 200,
-    marginTop: -10,
+    marginTop: 20,
     marginBottom: 20,
   },
   menuTabs: {
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     width: '100%',
+    marginTop: -30,
   },
   
   menuButton: {
@@ -120,6 +121,7 @@ const styles = StyleSheet.create({
   },
 
   remindersContainer: {
+    flex: 1,
     marginBottom: 20,
   },
 
@@ -131,9 +133,11 @@ const styles = StyleSheet.create({
     paddingVertical: 23,
     width: '100%',
     position: 'absolute',
-    bottom: 1,
+    bottom: 2,
     alignItems: 'center',
+    marginBottom: 20,
   },
+
   bottomTabButtonLeft: {
     position: 'absolute',
     left: 20, // Position the "Reminders" icon on the left side
@@ -144,43 +148,49 @@ const styles = StyleSheet.create({
     left: '47%', // Center the "Calendar" icon on the screen
     alignItems: 'center',
   },
+
   bottomTabButtonRight: {
     position: 'absolute',
     right: 20, // Position the "Profile" icon on the right side
     alignItems: 'center',
   },
+
   bottomTabText: {
     color: '#000',
   },
+
   bottomTabIcon: {
     width: 24,
     height: 24,
   },
+
   iconContainer: {
     alignItems: 'center', // Centers icons and text vertically
   },
+
   fab: {
     position: 'absolute',
-    bottom: 100,
     right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#0B6477',
+    bottom: 90, // Adjust this value if needed to position above bottom tab bar
+    width: 60,
+    height: 60,
+    borderRadius: 28,
+    backgroundColor: '#0B6477', // Or your preferred color
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.30,
+    shadowRadius: 4.65,
   },
+
   fabText: {
     fontSize: 30,
-    color: '#000',
+    color: '#000000',
   },
 
   overlay: {
@@ -202,18 +212,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   
-  sectionHeader: {
+  sidebarHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,  // reduced from default padding
   },
-  
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginLeft: 10,
-    flex: 1,
-  },
-  
+   
+
   sidebarIcon: {
     width: 20,
     height: 20,
@@ -245,7 +252,7 @@ const styles = StyleSheet.create({
   
   categoryText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 16,
   },
   
   categoryCount: {
@@ -262,7 +269,8 @@ const styles = StyleSheet.create({
   
   sidebarButtonText: {
     marginLeft: 10,
-    fontSize: 14,
+    fontSize: 20,
+    fontWeight: 'bold'
   },
 
   
@@ -272,7 +280,7 @@ const styles = StyleSheet.create({
     top: 0,
     height: '100%',
     width: '75%', // Covers 3/4 of the screen width
-    backgroundColor: '#C5DEE3',
+    backgroundColor: '#A8D8E4',
     zIndex: 10, // Ensures it appears above other components
   },
   sidebarTop: {
@@ -286,9 +294,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  logoWrapper: {
+    width: '100%',
+    alignItems: 'center',
+  },
+
   sidebarLogo: {
-    width: 100, // Adjust logo size as needed
-    height: 100,
+    width: 200, // Adjust logo size as needed
+    height: 200,
     resizeMode: 'contain',
   },
   sidebarmenuIcon: {
@@ -296,17 +310,37 @@ const styles = StyleSheet.create({
     height: 24,
   },
 
-  dividerLine: {
-    height: 1,          // Thickness of the line
-    backgroundColor: '#ccc', // Color of the line, adjust as needed
-    width: '100%',      // Full width of the sidebar
+  menuButtonContainer: {
+    width: '100%',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginTop: -70,
+    alignItems: 'flex-end',  // Align to the right
+  },
+  
+  sidebarMenuButton: {
+    padding: 8,
   },
 
-  sidebarHeader: {
-    flexDirection: 'row',       // Align items horizontally
-    justifyContent: 'space-between', // Space logo and button to opposite ends
-    alignItems: 'center',       // Center items vertically
-    paddingHorizontal: 10,
+  dividerLine: {
+    height: 1,
+    backgroundColor: '#1A1A1D',
+    marginTop: 0,  // reduced margin
+    marginBottom: 8,
+  },
+
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  
+  sectionTitle: {
+    fontSize: 20,
+    marginLeft: 12,
+    flex: 1,
+    fontWeight: 'bold'
   },
 
   sidebarText: {

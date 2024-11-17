@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 1,
     alignItems: 'center',
+    marginBottom: 20,
   },
   bottomTabButtonLeft: {
     position: 'absolute',

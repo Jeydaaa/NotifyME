@@ -64,8 +64,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   addButtonText: {
-    fontSize: 30,
+    fontSize: 40,
     color: '#000',
+    fontWeight: 'bold',
+    lineHeight: 50,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    includeFontPadding: false,
+    marginTop: -2,
   },
   
   modalOverlay: {
@@ -157,21 +163,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: '#000',
     fontSize: 16,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backgroundOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust opacity here
   },
 });
 

@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Animated, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
 import styles from '../styles/homestyles';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import AddReminder from './addreminder';
 
 const HomeScreen = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [hasReminders, setHasReminders] = useState(false);
-  const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(true);
+  const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const categories = [
     { name: 'All', count: 0 },
@@ -24,8 +27,14 @@ const HomeScreen = () => {
   const renderContent = () => {
     if (!hasReminders) {
       return (
-        <View style={styles.emptyStateContainer}>
-          <Text style={styles.emptyStateText}>
+        <View style={[styles.emptyStateContainer, { 
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }]}>
+          <Text style={[styles.emptyStateText, {
+            textAlign: 'center'
+          }]}>
             No reminder in this category{'\n'}
             click "+" to create your task.
           </Text>
@@ -35,7 +44,9 @@ const HomeScreen = () => {
     return null; // Return your reminder list here when there are reminders
   };
 
-
+  const handleAddReminder = () => {
+    setIsExpanded(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -118,19 +129,28 @@ const HomeScreen = () => {
       </View>
 
       {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab}>
-        <Text style={styles.fabText}>+</Text>
+      <TouchableOpacity 
+        style={styles.fab}
+        onPress={handleAddReminder}
+      >
+        <FontAwesome5 name="plus" size={24} color="black" solid />
       </TouchableOpacity>
 
       {/* Sidebar */}
       {isSidebarVisible && (
         <Animated.View style={styles.sidebar}>
           <ScrollView style={styles.sidebarScrollView}>
-            {/* Logo and Close Button */}
+            {/* Logo Section */}
             <View style={styles.sidebarHeader}>
-              <Image source={require('./images/logo.png')} style={styles.sidebarLogo} />
-              <TouchableOpacity onPress={toggleSidebar}>
-                <Image source={require('./images/menu-burger.png')} style={styles.sidebarmenuIcon} />
+              <View style={styles.logoWrapper}>
+                <Image source={require('./images/logo.png')} style={styles.sidebarLogo} />
+              </View>
+            </View>
+
+            {/* Menu Button */}
+            <View style={styles.menuButtonContainer}>
+              <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarMenuButton}>
+                <FontAwesome5 name="bars" size={24} color="black" solid />
               </TouchableOpacity>
             </View>
 
@@ -138,70 +158,68 @@ const HomeScreen = () => {
 
             {/* Categories Section */}
             <TouchableOpacity 
-              style={styles.sidebarSection}
+              style={styles.sectionHeader}
               onPress={() => setIsCategoriesExpanded(!isCategoriesExpanded)}
             >
-              <View style={styles.sectionHeader}>
-                <Image source={require('./images/grid.png')} style={styles.sidebarIcon} />
-                <Text style={styles.sectionTitle}>Categories</Text>
-                <Image 
-                  source={require('./images/arrow-down.png')} 
-                  style={[
-                    styles.arrowIcon,
-                    isCategoriesExpanded && styles.arrowUp
-                  ]} 
-                />
-              </View>
+              <FontAwesome5 name="th-large" size={22} color="black" solid />
+              <Text style={styles.sectionTitle}>Categories</Text>
+              <MaterialIcons 
+                name={isCategoriesExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+                size={26} 
+                color="black" 
+              />
             </TouchableOpacity>
 
             {isCategoriesExpanded && (
               <View style={styles.categoriesList}>
                 {categories.map((category) => (
-                  <TouchableOpacity 
-                    key={category.name}
-                    style={styles.categoryItem}
-                  >
-                    <Image source={require('./images/list.png')} style={styles.categoryIcon} />
+                  <TouchableOpacity key={category.name} style={styles.categoryItem}>
+                    <FontAwesome5 name="list" size={18} color="black" solid />
                     <Text style={styles.categoryText}>{category.name}</Text>
                     <Text style={styles.categoryCount}>{category.count}</Text>
                   </TouchableOpacity>
                 ))}
+                
+                {/* Create New inside categories */}
+                <TouchableOpacity style={styles.categoryItem}>
+                  <FontAwesome5 name="plus" size={18} color="black" solid />
+                  <Text style={styles.categoryText}>Create New</Text>
+                </TouchableOpacity>
               </View>
             )}
 
-            {/* Create New Button */}
-            <TouchableOpacity style={styles.sidebarButton}>
-              <Image source={require('./images/plus.png')} style={styles.sidebarIcon} />
-              <Text style={styles.sidebarButtonText}>Create New</Text>
-            </TouchableOpacity>
-
             {/* Star Reminder Button */}
             <TouchableOpacity style={styles.sidebarButton}>
-              <Image source={require('./images/star.png')} style={styles.sidebarIcon} />
+              <FontAwesome5 name="star" size={22} color="black" solid />
               <Text style={styles.sidebarButtonText}>Star Reminder</Text>
             </TouchableOpacity>
 
             {/* Themes Button */}
             <TouchableOpacity style={styles.sidebarButton}>
-              <Image source={require('./images/palette.png')} style={styles.sidebarIcon} />
+              <FontAwesome5 name="palette" size={22} color="black" solid />
               <Text style={styles.sidebarButtonText}>Themes</Text>
             </TouchableOpacity>
 
             {/* FAQ Button */}
             <TouchableOpacity style={styles.sidebarButton}>
-              <Image source={require('./images/help.png')} style={styles.sidebarIcon} />
+              <FontAwesome5 name="question-circle" size={22} color="black" solid />
               <Text style={styles.sidebarButtonText}>FAQ</Text>
             </TouchableOpacity>
 
             {/* Settings */}
             <TouchableOpacity style={styles.sidebarButton}>
-              <Image source={require('./images/settings.png')} style={styles.sidebarIcon} />
-              <Text style ={styles.sidebarButtonText}>Settings</Text>
+              <FontAwesome5 name="cog" size={22} color="black" solid />
+              <Text style={styles.sidebarButtonText}>Settings</Text>
             </TouchableOpacity>
 
           </ScrollView>
         </Animated.View>
       )}
+
+      <AddReminder 
+        isExpanded={isExpanded}
+        setIsExpanded={setIsExpanded}
+      />
     </View>
   );
 };
