@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import styles from '../styles/loginstyles';
-import { supabase } from '../../supabase';
+import { auth } from '../../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -11,22 +14,20 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .or(`email.eq.${email}, username.eq.${email}`)
-        .single();
-
-      if (error) {
-        console.error('Login error:', error);
-        alert('Invalid credentials');
-        return;
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (userCredential.user) {
+        const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+        
+        if (userDoc.exists()) {
+          alert('Login successful!');
+          router.push('/screen/home');
+        } else {
+          alert('User profile not found');
+        }
       }
-
-      router.push('/screen/home');
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      alert('Something went wrong. Please try again.');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      alert(error.message || 'Invalid credentials');
     }
   };
 
