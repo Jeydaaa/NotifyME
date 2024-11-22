@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Animated, Modal, FlatList, Image } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Animated, Modal, FlatList, Image, Platform, Switch } from 'react-native';
 import styles from '../styles/addreminderstyles';
 import { MaterialIcons } from '@expo/vector-icons';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from 'date-fns';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Audio } from 'expo-av';
 
 interface AddReminderProps {
   isExpanded: boolean;
@@ -14,6 +17,27 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isCreateCategoryModalVisible, setIsCreateCategoryModalVisible] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [isCalendarModalVisible, setIsCalendarModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const maxDate = new Date(2026, 11, 31); // December 31, 2026
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [time, setTime] = useState(new Date());
+  const [isTimeModalVisible, setIsTimeModalVisible] = useState(false);
+  const [hour, setHour] = useState('00');
+  const [minute, setMinute] = useState('00');
+  const [isPM, setIsPM] = useState(false);
+  const [isReminderModalVisible, setIsReminderModalVisible] = useState(false);
+  const [isReminderOn, setIsReminderOn] = useState(false);
+  const [selectedSound, setSelectedSound] = useState('Default');
+  const [showSoundOptions, setShowSoundOptions] = useState(false);
+
+  const notificationSounds = [
+    { id: '1', name: 'Default', soundFile: 'default_sound' },
+    { id: '2', name: 'Bell', soundFile: 'bell_sound' },
+    { id: '3', name: 'Chime', soundFile: 'chime_sound' },
+  ];
 
   const categories = [
     { id: '1', name: 'Work' },
@@ -56,6 +80,158 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
     </TouchableOpacity>
   );
 
+  const toggleCalendarModal = () => {
+    setIsCalendarModalVisible(!isCalendarModalVisible);
+  };
+
+  const generateCalendarDates = () => {
+    const start = startOfMonth(currentDate);
+    const end = endOfMonth(currentDate);
+    const days = eachDayOfInterval({ start, end });
+    const startDayOfWeek = getDay(start);
+    
+    const dates = [];
+    
+    // Add empty spaces for days before the 1st of the month
+    for (let i = 0; i < startDayOfWeek; i++) {
+      const prevDate = new Date(start);
+      prevDate.setDate(prevDate.getDate() - (startDayOfWeek - i));
+      dates.push(
+        <Text key={`prev-${i}`} style={[styles.dateText, styles.prevMonthDate]}>
+          {prevDate.getDate()}
+        </Text>
+      );
+    }
+
+    // Add current month's dates
+    days.forEach((day) => {
+      const isToday = new Date().toDateString() === day.toDateString();
+      dates.push(
+        <TouchableOpacity 
+          key={day.getTime()} 
+          style={styles.calendarDate}
+          onPress={() => setSelectedDate(format(day, 'yyyy-MM-dd'))}
+        >
+          <Text style={[
+            styles.dateText,
+            isToday && styles.todayText,
+            selectedDate === format(day, 'yyyy-MM-dd') && styles.selectedDateText
+          ]}>
+            {format(day, 'd')}
+          </Text>
+        </TouchableOpacity>
+      );
+    });
+
+    return dates;
+  };
+
+  const handlePrevMonth = () => {
+    setCurrentDate(prev => subMonths(prev, 1));
+  };
+
+  const handleNextMonth = () => {
+    const nextMonth = addMonths(currentDate, 1);
+    if (nextMonth <= maxDate) {
+      setCurrentDate(nextMonth);
+    }
+  };
+
+  const handleTimeChange = (event: any, selectedTime?: Date) => {
+    setShowTimePicker(Platform.OS === 'ios');
+    if (selectedTime) {
+      setTime(selectedTime);
+      setSelectedTime(format(selectedTime, 'HH:mm'));
+    }
+  };
+
+  const TimePickerModal = () => (
+    <Modal
+      visible={isTimeModalVisible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={() => setIsTimeModalVisible(false)}
+    >
+      <View style={styles.timeModalContainer}>
+        <View style={styles.timeModalContent}>
+          <View style={styles.timeModalHeader}>
+            <Text style={styles.timeModalTitle}>Set Time</Text>
+            <TouchableOpacity 
+              style={styles.timeModalClose}
+              onPress={() => setIsTimeModalVisible(false)}
+            >
+              <Text style={styles.closeIcon}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.timeInputContainer}>
+            <View style={styles.timeInputGroup}>
+              <TextInput
+                style={styles.timeInput}
+                value={hour}
+                onChangeText={setHour}
+                keyboardType="numeric"
+                maxLength={2}
+              />
+              <Text style={styles.timeLabel}>Hour</Text>
+            </View>
+            
+            <Text style={styles.timeColon}>:</Text>
+            
+            <View style={styles.timeInputGroup}>
+              <TextInput
+                style={styles.timeInput}
+                value={minute}
+                onChangeText={setMinute}
+                keyboardType="numeric"
+                maxLength={2}
+              />
+              <Text style={styles.timeLabel}>Minute</Text>
+            </View>
+
+            <View style={styles.amPmContainer}>
+              <TouchableOpacity 
+                style={[styles.amPmButton, !isPM && styles.amPmButtonActive]}
+                onPress={() => setIsPM(false)}
+              >
+                <Text style={[styles.amPmText, !isPM && styles.amPmTextActive]}>Am</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.amPmButton, isPM && styles.amPmButtonActive]}
+                onPress={() => setIsPM(true)}
+              >
+                <Text style={[styles.amPmText, isPM && styles.amPmTextActive]}>Pm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <TouchableOpacity 
+            style={styles.timeDoneButton}
+            onPress={() => {
+              setSelectedTime(`${hour}:${minute} ${isPM ? 'PM' : 'AM'}`);
+              setIsTimeModalVisible(false);
+            }}
+          >
+            <Text style={styles.timeDoneText}>Done</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const playSound = async (soundFile: string) => {
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        soundFile === 'default_sound' ? require('../assets/sounds/default.mp3') :
+        soundFile === 'bell_sound' ? require('../assets/sounds/bell.mp3') :
+        require('../assets/sounds/chime.mp3')
+      );
+      await sound.playAsync();
+    } catch (error) {
+      console.log('Error playing sound:', error);
+    }
+  };
+
   return (
     <>
       {isExpanded && <View style={styles.overlay} />}
@@ -96,10 +272,23 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
               {selectedCategory || 'category'}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.calendarButton}>
+          <TouchableOpacity 
+            style={styles.calendarButton}
+            onPress={toggleCalendarModal}
+          >
             <MaterialIcons name="calendar-today" size={24} color="#333" />
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity 
+          style={styles.saveReminderButton}
+          onPress={() => {
+            console.log('Saving reminder...');
+            toggleReminder();
+          }}
+        >
+          <Text style={styles.saveReminderText}>Save</Text>
+        </TouchableOpacity>
       </Animated.View>
 
       <Modal
@@ -182,6 +371,87 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
         </TouchableOpacity>
       </Modal>
 
+      <Modal
+        visible={isCalendarModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={toggleCalendarModal}
+      >
+        <View style={styles.calendarModalContainer}>
+          <View style={styles.calendarContent}>
+            {/* Calendar Header */}
+            <View style={styles.calendarHeader}>
+              <TouchableOpacity onPress={handlePrevMonth}>
+                <Text style={styles.arrowText}>◀</Text>
+              </TouchableOpacity>
+              <Text style={styles.monthText}>{format(currentDate, 'MMMM yyyy')}</Text>
+              <TouchableOpacity onPress={handleNextMonth}>
+                <Text style={styles.arrowText}>▶</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Days Header */}
+            <View style={styles.weekDaysContainer}>
+              <Text style={styles.weekDayText}>Sun</Text>
+              <Text style={styles.weekDayText}>Mon</Text>
+              <Text style={styles.weekDayText}>Tue</Text>
+              <Text style={styles.weekDayText}>Wed</Text>
+              <Text style={styles.weekDayText}>Thu</Text>
+              <Text style={styles.weekDayText}>Fri</Text>
+              <Text style={styles.weekDayText}>Sat</Text>
+            </View>
+
+            {/* Calendar Grid */}
+            <View style={styles.datesContainer}>
+              {generateCalendarDates()}
+            </View>
+
+            {/* Time and Reminder Inputs */}
+            <View style={styles.inputsContainer}>
+              <View style={styles.inputRow}>
+                <MaterialIcons name="access-time" size={20} color="#666" />
+                <TouchableOpacity 
+                  onPress={() => {
+                    console.log('Opening time modal');
+                    setIsTimeModalVisible(true);
+                  }}
+                >
+                  <Text style={styles.input}>
+                    {selectedTime || 'Time'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.inputRow}>
+                <MaterialIcons name="notifications" size={20} color="#666" />
+                <TouchableOpacity 
+                  onPress={() => setIsReminderModalVisible(true)}
+                >
+                  <Text style={styles.input}>Reminder</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Done Button */}
+            <TouchableOpacity 
+              style={styles.doneButton}
+              onPress={toggleCalendarModal}
+            >
+              <Text style={styles.doneText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {showTimePicker && (
+        <DateTimePicker
+          value={time}
+          mode="time"
+          is24Hour={true}
+          display="default"
+          onChange={handleTimeChange}
+        />
+      )}
+
       {!isExpanded && (
         <>
          
@@ -193,6 +463,76 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
           </TouchableOpacity>
         </>
       )}
+
+      <TimePickerModal />
+
+      <Modal
+        visible={isReminderModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsReminderModalVisible(false)}
+      >
+        <View style={styles.reminderModalContainer}>
+          <View style={styles.reminderModalContent}>
+            <View style={styles.reminderModalHeader}>
+              <Text style={styles.reminderModalTitle}>Reminder On</Text>
+              <Switch
+                value={isReminderOn}
+                onValueChange={setIsReminderOn}
+                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                thumbColor={isReminderOn ? '#007AFF' : '#f4f3f4'}
+              />
+              <TouchableOpacity 
+                style={styles.reminderModalClose}
+                onPress={() => setIsReminderModalVisible(false)}
+              >
+                <Text style={styles.closeIcon}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity 
+              style={styles.soundSelector}
+              onPress={() => setShowSoundOptions(!showSoundOptions)}
+            >
+              <Text style={styles.soundText}>{selectedSound}</Text>
+              <Text style={styles.dropdownIcon}>▼</Text>
+            </TouchableOpacity>
+
+            {showSoundOptions && (
+              <View style={styles.soundOptionsContainer}>
+                {notificationSounds.map((sound) => (
+                  <TouchableOpacity
+                    key={sound.id}
+                    style={[
+                      styles.soundOption,
+                      selectedSound === sound.name && styles.selectedSoundOption
+                    ]}
+                    onPress={() => {
+                      setSelectedSound(sound.name);
+                      setShowSoundOptions(false);
+                      playSound(sound.soundFile);
+                    }}
+                  >
+                    <Text style={[
+                      styles.soundOptionText,
+                      selectedSound === sound.name && styles.selectedSoundOptionText
+                    ]}>
+                      {sound.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            <TouchableOpacity 
+              style={styles.reminderDoneButton}
+              onPress={() => setIsReminderModalVisible(false)}
+            >
+              <Text style={styles.reminderDoneText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
