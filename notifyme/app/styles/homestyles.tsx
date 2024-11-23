@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   },
 
   dividerLine: {
-    height: 1,
+    height: 2,
     backgroundColor: '#1A1A1D',
     marginTop: 0,  // reduced margin
     marginBottom: 8,
@@ -346,7 +346,72 @@ const styles = StyleSheet.create({
   sidebarText: {
     width: 30,
     height: 30
-  }
+  },
+
+
+
+
+
+
+
+  remindersList: {
+    width: '100%',
+    height: '50%',
+    backgroundColor: '#C5DEE3',
+
+  },
+  reminderItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  
+  checkboxContainer: {
+    marginRight: 10,
+  },
+  
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#666',
+  },
+  
+  reminderTextContainer: {
+    flex: 1,
+  },
+  
+  reminderTitle: {
+    fontSize: 16,
+    color: '#333',
+  },
+  
+  reminderDateTime: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  
+  reminderActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  
+  starButton: {
+    padding: 5,
+  },
+  
+  calendarButton: {
+    padding: 5,
+  },
+  
+  deleteButton: {
+    padding: 5,
+  },
+
 
 });
 

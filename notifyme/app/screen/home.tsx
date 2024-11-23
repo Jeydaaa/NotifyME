@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { View, Text, TouchableOpacity, Image, Animated, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
 import styles from '../styles/homestyles';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import AddReminder from './addreminder';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '../../firebase';
 
 const HomeScreen = () => {
   const [activeTab, setActiveTab] = useState('All');
@@ -11,6 +13,24 @@ const HomeScreen = () => {
   const [hasReminders, setHasReminders] = useState(false);
   const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isRemindersExpanded, setIsRemindersExpanded] = useState(false);
+  const [reminders, setReminders] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "remminders"), (snapshot) => {
+      const reminderList = snapshot.docs.map(doc => {
+        console.log('Document data:', doc.data());
+        return {
+          id: doc.id,
+          ...doc.data()
+        };
+      });
+      setReminders(reminderList as any);
+      setHasReminders(reminderList.length > 0);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const categories = [
     { name: 'All', count: 0 },
@@ -27,21 +47,49 @@ const HomeScreen = () => {
   const renderContent = () => {
     if (!hasReminders) {
       return (
-        <View style={[styles.emptyStateContainer, { 
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center'
-        }]}>
-          <Text style={[styles.emptyStateText, {
-            textAlign: 'center'
-          }]}>
+        <View style={styles.emptyStateContainer}>
+          <Text style={styles.emptyStateText}>
             No reminder in this category{'\n'}
             click "+" to create your task.
           </Text>
         </View>
       );
     }
-    return null; // Return your reminder list here when there are reminders
+
+    return (
+      <>
+        {isRemindersExpanded && (
+          <View style={styles.remindersList}>
+            {reminders.map((reminder: {
+              title: ReactNode;
+              date: ReactNode;
+              time: ReactNode; id: string 
+}) => (
+              <View key={reminder.id} style={styles.reminderItem}>
+                <TouchableOpacity style={styles.checkboxContainer}>
+                  <View style={styles.checkbox} />
+                </TouchableOpacity>
+                <View style={styles.reminderTextContainer}>
+                  <Text style={styles.reminderTitle}>{reminder.title}</Text>
+                  <Text style={styles.reminderDateTime}>{reminder.date} {reminder.time}</Text>
+                </View>
+                <View style={styles.reminderActions}>
+                  <TouchableOpacity style={styles.starButton}>
+                    <FontAwesome5 name="star" size={20} color="#ccc" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.calendarButton}>
+                    <FontAwesome5 name="calendar" size={20} color="#666" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.deleteButton}>
+                    <FontAwesome5 name="trash" size={20} color="#ff4444" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+      </>
+    );
   };
 
   const handleAddReminder = () => {
@@ -96,13 +144,17 @@ const HomeScreen = () => {
 
       {/* Reminders Section */}
       <View style={styles.remindersContainer}>
-        <View style={styles.reminderHeader}>
+        <TouchableOpacity 
+          style={styles.reminderHeader}
+          onPress={() => setIsRemindersExpanded(!isRemindersExpanded)}
+        >
           <Text style={styles.remindersText}>Reminders</Text>
-          <Image 
-            source={require('./images/arrow-down.png')} 
-            style={styles.arrowIcon} 
+          <MaterialIcons 
+            name={isRemindersExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+            size={24} 
+            color="black" 
           />
-        </View>
+        </TouchableOpacity>
         {renderContent()}
       </View>
 

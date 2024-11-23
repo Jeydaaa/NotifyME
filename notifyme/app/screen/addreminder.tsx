@@ -6,7 +6,9 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterv
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Audio } from 'expo-av';
 import { addDoc, collection } from 'firebase/firestore';
-import { db, auth } from '../config/firebase';
+import { auth, db } from '../../firebase';
+import { Alert } from 'react-native';
+
 
 interface AddReminderProps {
   isExpanded: boolean;
@@ -35,6 +37,7 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
   const [selectedSound, setSelectedSound] = useState('Default');
   const [showSoundOptions, setShowSoundOptions] = useState(false);
   const [reminderTitle, setReminderTitle] = useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const notificationSounds = [
     { id: '1', name: 'Default', soundFile: 'default_sound' },
@@ -240,16 +243,21 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
       const currentUser = auth.currentUser;
       
       if (!currentUser) {
-        console.error('No user logged in');
+        Alert.alert('Error', 'Please login first');
+        return;
+      }
+
+      if (!reminderTitle) {
+        Alert.alert('Error', 'Please enter a reminder title');
         return;
       }
 
       const reminderData = {
         categoryID: selectedCategory || 'default',
         date: selectedDate,
-        reminderID: Math.random().toString(36).substr(2, 9), // Generate random ID
-        reminderOn: isReminderOn ? "1" : "0",
-        sound: selectedSound,
+        reminderID: Math.random().toString(36).substr(2, 9),
+        reminderOn: isReminderOn ? "5" : "0",
+        sound: selectedSound || "50",
         time: selectedTime,
         title: reminderTitle,
         userID: currentUser.uid
@@ -258,17 +266,28 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
       const remindersRef = collection(db, 'remminders');
       await addDoc(remindersRef, reminderData);
 
-      // Clear form and close modal
-      setReminderTitle('');
-      setSelectedCategory('');
-      setSelectedDate('');
-      setSelectedTime('');
-      setIsReminderOn(false);
-      setSelectedSound('Default');
-      toggleReminder();
+      Alert.alert(
+        'Success',
+        'Your reminder has been saved successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setReminderTitle('');
+              setSelectedCategory('');
+              setSelectedDate('');
+              setSelectedTime('');
+              setIsReminderOn(false);
+              setSelectedSound('Default');
+              toggleReminder();
+            }
+          }
+        ]
+      );
 
     } catch (error) {
       console.error('Error saving reminder:', error);
+      Alert.alert('Error', 'Failed to save reminder. Please try again.');
     }
   };
 
