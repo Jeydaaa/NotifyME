@@ -5,6 +5,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Audio } from 'expo-av';
+import { addDoc, collection } from 'firebase/firestore';
+import { db, auth } from '../config/firebase';
 
 interface AddReminderProps {
   isExpanded: boolean;
@@ -32,6 +34,7 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
   const [isReminderOn, setIsReminderOn] = useState(false);
   const [selectedSound, setSelectedSound] = useState('Default');
   const [showSoundOptions, setShowSoundOptions] = useState(false);
+  const [reminderTitle, setReminderTitle] = useState('');
 
   const notificationSounds = [
     { id: '1', name: 'Default', soundFile: 'default_sound' },
@@ -232,6 +235,43 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
     }
   };
 
+  const handleSaveReminder = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      
+      if (!currentUser) {
+        console.error('No user logged in');
+        return;
+      }
+
+      const reminderData = {
+        categoryID: selectedCategory || 'default',
+        date: selectedDate,
+        reminderID: Math.random().toString(36).substr(2, 9), // Generate random ID
+        reminderOn: isReminderOn ? "1" : "0",
+        sound: selectedSound,
+        time: selectedTime,
+        title: reminderTitle,
+        userID: currentUser.uid
+      };
+
+      const remindersRef = collection(db, 'remminders');
+      await addDoc(remindersRef, reminderData);
+
+      // Clear form and close modal
+      setReminderTitle('');
+      setSelectedCategory('');
+      setSelectedDate('');
+      setSelectedTime('');
+      setIsReminderOn(false);
+      setSelectedSound('Default');
+      toggleReminder();
+
+    } catch (error) {
+      console.error('Error saving reminder:', error);
+    }
+  };
+
   return (
     <>
       {isExpanded && <View style={styles.overlay} />}
@@ -262,6 +302,8 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
           style={styles.reminderInput}
           placeholder="Input new reminder here"
           placeholderTextColor="#666"
+          value={reminderTitle}
+          onChangeText={setReminderTitle}
         />
         <View style={styles.categoryRow}>
           <TouchableOpacity 
@@ -282,10 +324,7 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
 
         <TouchableOpacity 
           style={styles.saveReminderButton}
-          onPress={() => {
-            console.log('Saving reminder...');
-            toggleReminder();
-          }}
+          onPress={handleSaveReminder}
         >
           <Text style={styles.saveReminderText}>Save</Text>
         </TouchableOpacity>
