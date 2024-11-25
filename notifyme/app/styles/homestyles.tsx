@@ -117,12 +117,13 @@ const styles = StyleSheet.create({
   remindersText: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginLeft: -50,
+    marginLeft: 40,
   },
 
   remindersContainer: {
     flex: 1,
     marginBottom: 20,
+    width: '100%'
   },
 
 
