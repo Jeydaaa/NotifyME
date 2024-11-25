@@ -417,11 +417,20 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   reminderModalContainer: {
+    width: '1000%', // Reduce width to 80% of the screen to avoid overflow
+    height: 'auto', // Adjust height according to content (or you can set a fixed height like '70%' or a pixel value)
+    maxHeight: '80%', // Prevent it from growing too large vertically
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+    position: 'absolute',
+    top: '10%', // Optional: to ensure it doesn't stick to the very top
+    left: '10%', // Optional: to ensure it is centered horizontally
+    padding: 20, // Add padding if needed inside the modal
+    borderRadius: 15, // Optional: rounded corners for the modal
+},
+
   reminderModalContent: {
     backgroundColor: '#E0F4F4',
     borderRadius: 15,

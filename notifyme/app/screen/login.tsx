@@ -15,19 +15,25 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      if (userCredential.user) {
-        const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+      const user = userCredential.user;
+      
+      if (user) {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
         
         if (userDoc.exists()) {
+          const userData = userDoc.data();
+          console.log('User Data:', userData);
+          
           alert('Login successful!');
           router.push('/screen/home');
         } else {
-          alert('User profile not found');
+          alert('User profile not found in database');
         }
       }
     } catch (error: any) {
       console.error('Login error:', error);
-      alert(error.message || 'Invalid credentials');
+      alert(error.message || 'Invalid email or password');
     }
   };
 

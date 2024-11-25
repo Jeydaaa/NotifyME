@@ -1,16 +1,37 @@
 // ProfileScreen.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Platform } from 'react-native';
 import { Link } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import styles from '../styles/profilestyles';
 import { MaterialIcons } from '@expo/vector-icons';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../../firebase';
 
 const ProfileScreen = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
-  const [profileImage, setProfileImage] = useState(require('../screen/images/avatar.png'));
+  const [profileImage, setProfileImage] = useState(require('./images/avatar.png')); // Fixed image path
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState('All');
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          if (userDoc.exists()) {
+            setUsername(userDoc.data().username);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching username:', error);
+      }
+    };
+
+    fetchUsername();
+  }, []);
 
   // Image picker function
   const pickImage = async () => {
@@ -46,7 +67,7 @@ const ProfileScreen = () => {
             source={profileImage} 
             style={styles.avatar}
           />
-          <Text style={styles.username}>Username</Text>
+          <Text style={styles.username}>{username || 'Guest'}</Text>
         </TouchableOpacity>
       </View>
 

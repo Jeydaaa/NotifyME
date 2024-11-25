@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Animated, Modal, FlatList, Image, Platform, Switch } from 'react-native';
 import styles from '../styles/addreminderstyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Audio } from 'expo-av';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
 import { Alert } from 'react-native';
 
+interface Reminder {
+  categoryID: string;
+  createdAt: string;
+  date: string;
+  reminderID: string;
+  reminderOn: string;
+  sound: string;
+  time: string;
+  title: string;
+  userID: string;
+}
 
 interface AddReminderProps {
   isExpanded: boolean;
@@ -38,6 +49,7 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
   const [showSoundOptions, setShowSoundOptions] = useState(false);
   const [reminderTitle, setReminderTitle] = useState('');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [userReminders, setUserReminders] = useState<Reminder[]>([]);
 
   const notificationSounds = [
     { id: '1', name: 'Default', soundFile: 'default_sound' },
@@ -103,9 +115,11 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
       const prevDate = new Date(start);
       prevDate.setDate(prevDate.getDate() - (startDayOfWeek - i));
       dates.push(
-        <Text key={`prev-${i}`} style={[styles.dateText, styles.prevMonthDate]}>
-          {prevDate.getDate()}
-        </Text>
+        <View key={`prev-${i}`} style={styles.calendarDate}>
+          <Text style={[styles.dateText, styles.prevMonthDate]}>
+            {prevDate.getDate()}
+          </Text>
+        </View>
       );
     }
 
@@ -114,7 +128,7 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
       const isToday = new Date().toDateString() === day.toDateString();
       dates.push(
         <TouchableOpacity 
-          key={day.getTime()} 
+          key={day.toString()} 
           style={styles.calendarDate}
           onPress={() => setSelectedDate(format(day, 'yyyy-MM-dd'))}
         >
@@ -252,6 +266,19 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
         return;
       }
 
+      const remindersRef = collection(db, 'remminders');
+      const q = query(
+        remindersRef, 
+        where("userID", "==", currentUser.uid),
+        where("title", "==", reminderTitle)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        Alert.alert('Error', 'A reminder with this title already exists');
+        return;
+      }
+
       const reminderData = {
         categoryID: selectedCategory || 'default',
         date: selectedDate,
@@ -260,10 +287,10 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
         sound: selectedSound || "50",
         time: selectedTime,
         title: reminderTitle,
-        userID: currentUser.uid
+        userID: currentUser.uid,
+        createdAt: new Date().toISOString()
       };
 
-      const remindersRef = collection(db, 'remminders');
       await addDoc(remindersRef, reminderData);
 
       Alert.alert(
@@ -290,6 +317,59 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
       Alert.alert('Error', 'Failed to save reminder. Please try again.');
     }
   };
+
+  const fetchUserReminders = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        setUserReminders([]); // Clear reminders if no user is logged in
+        return;
+      }
+
+      const remindersRef = collection(db, "remminders");
+      const q = query(
+        remindersRef,
+        where("userID", "==", currentUser.uid), // Ensure this exact match
+        orderBy("createdAt", "desc")
+      );
+ 
+      const querySnapshot = await getDocs(q);
+      const reminders = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          categoryID: data.categoryID || "",
+          createdAt: data.createdAt || "",
+          date: data.date || "",
+          reminderID: data.reminderID || "",
+          reminderOn: data.reminderOn || "",
+          sound: data.sound || "",
+          time: data.time || "",
+          title: data.title || "",
+          userID: data.userID || "",
+        };
+      });
+
+      console.log('Current user ID:', currentUser.uid);
+      console.log('Fetched reminders:', reminders);
+      setUserReminders(reminders);
+    } catch (error) {
+      console.error("Error fetching reminders:", error);
+      Alert.alert("Error", "Failed to fetch reminders");
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        fetchUserReminders();
+      } else {
+        setUserReminders([]); // Clear reminders when user logs out
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup subscription
+  }, []);
 
   return (
     <>

@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import styles from '../styles/registerstyles';
 import { auth, db } from '../../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
 const RegisterScreen = () => {
@@ -25,11 +25,12 @@ const RegisterScreen = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Save additional user data to Firestore
+      // Save user data using their UID as document ID
       await setDoc(doc(db, 'users', user.uid), {
         username: username,
         email: email,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        userID: user.uid  // Add userID to the document data
       });
 
       alert('Registration successful!');

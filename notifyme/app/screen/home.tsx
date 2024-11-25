@@ -4,10 +4,11 @@ import { Link } from 'expo-router';
 import styles from '../styles/homestyles';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import AddReminder from './addreminder';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
+import { UserCredential } from 'firebase/auth';
 
-const HomeScreen = () => {
+const HomeScreen = (currentUser: UserCredential) => {
   const [activeTab, setActiveTab] = useState('All');
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [hasReminders, setHasReminders] = useState(false);
@@ -94,6 +95,22 @@ const HomeScreen = () => {
 
   const handleAddReminder = () => {
     setIsExpanded(true);
+  };
+
+  const fetchReminders = async () => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return;
+
+    const remindersRef = collection(db, 'remminders');
+    const q = query(remindersRef, where("userID", "==", currentUser.uid));
+    
+    const querySnapshot = await getDocs(q);
+    const reminders = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    // Use the reminders data
   };
 
   return (
