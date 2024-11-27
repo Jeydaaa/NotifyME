@@ -8,7 +8,7 @@ import { collection, onSnapshot, query, where, getDocs } from 'firebase/firestor
 import { auth, db } from '../../firebase';
 import { UserCredential } from 'firebase/auth';
 
-const HomeScreen = (currentUser: UserCredential) => {
+const HomeScreen = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [hasReminders, setHasReminders] = useState(false);
@@ -18,20 +18,40 @@ const HomeScreen = (currentUser: UserCredential) => {
   const [reminders, setReminders] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "remminders"), (snapshot) => {
-      const reminderList = snapshot.docs.map(doc => {
-        console.log('Document data:', doc.data());
-        return {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return;
+
+    let remindersQuery = query(
+      collection(db, "reminders"),
+      where("userID", "==", currentUser.uid)
+    );
+
+    // Add category filter if not showing 'All'
+    if (activeTab !== 'All') {
+      remindersQuery = query(
+        collection(db, "reminders"),
+        where("userID", "==", currentUser.uid),
+        where("category", "==", activeTab)
+      );
+    }
+
+    const unsubscribe = onSnapshot(
+      remindersQuery,
+      (snapshot) => {
+        const reminderList = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        };
-      });
-      setReminders(reminderList as any);
-      setHasReminders(reminderList.length > 0);
-    });
+        }));
+        setReminders(reminderList as any);
+        setHasReminders(reminderList.length > 0);
+      },
+      (error) => {
+        console.error("Error fetching reminders:", error);
+      }
+    );
 
     return () => unsubscribe();
-  }, []);
+  }, [activeTab]);
 
   const categories = [
     { name: 'All', count: 0 },
@@ -97,18 +117,26 @@ const HomeScreen = (currentUser: UserCredential) => {
     setIsExpanded(true);
   };
 
-  const fetchReminders = async () => {
+  const fetchUserReminders = async () => {
     const currentUser = auth.currentUser;
     if (!currentUser) return;
 
-    const remindersRef = collection(db, 'remminders');
+    const remindersRef = collection(db, 'reminders');
     const q = query(remindersRef, where("userID", "==", currentUser.uid));
     
     const querySnapshot = await getDocs(q);
-    const reminders = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          fetchUserReminders();
+        } else {
+          setReminders([]); // Clear reminders when user logs out
+        }
+      });
+  
+      return () => unsubscribe(); // Cleanup subscription
+    }, []);
     
     // Use the reminders data
   };

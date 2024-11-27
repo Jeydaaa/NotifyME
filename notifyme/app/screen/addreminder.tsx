@@ -8,6 +8,7 @@ import { Audio } from 'expo-av';
 import { addDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
 import { Alert } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 interface Reminder {
   categoryID: string;
@@ -50,6 +51,7 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
   const [reminderTitle, setReminderTitle] = useState('');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [userReminders, setUserReminders] = useState<Reminder[]>([]);
+  const [category, setCategory] = useState('');
 
   const notificationSounds = [
     { id: '1', name: 'Default', soundFile: 'default_sound' },
@@ -57,12 +59,7 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
     { id: '3', name: 'Chime', soundFile: 'chime_sound' },
   ];
 
-  const categories = [
-    { id: '1', name: 'Work' },
-    { id: '2', name: 'B-day' },
-    { id: '3', name: 'Occasion' },
-    { id: '4', name: 'Special' },
-  ];
+  const categories = ['Work', 'B-day', 'Occasion', 'Special'];
 
   const toggleReminder = () => {
     const toValue = isExpanded ? 0 : 1;
@@ -266,7 +263,8 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
         return;
       }
 
-      const remindersRef = collection(db, 'remminders');
+      // Check if reminder title already exists for this user
+      const remindersRef = collection(db, 'reminders');
       const q = query(
         remindersRef, 
         where("userID", "==", currentUser.uid),
@@ -279,6 +277,7 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
         return;
       }
 
+      // Create reminder data object
       const reminderData = {
         categoryID: selectedCategory || 'default',
         date: selectedDate,
@@ -291,8 +290,10 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
         createdAt: new Date().toISOString()
       };
 
+      // Add document to reminders collection
       await addDoc(remindersRef, reminderData);
 
+      // Show success message and reset form
       Alert.alert(
         'Success',
         'Your reminder has been saved successfully!',
@@ -318,58 +319,9 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
     }
   };
 
-  const fetchUserReminders = async () => {
-    try {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        setUserReminders([]); // Clear reminders if no user is logged in
-        return;
-      }
 
-      const remindersRef = collection(db, "remminders");
-      const q = query(
-        remindersRef,
-        where("userID", "==", currentUser.uid), // Ensure this exact match
-        orderBy("createdAt", "desc")
-      );
+
  
-      const querySnapshot = await getDocs(q);
-      const reminders = querySnapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          categoryID: data.categoryID || "",
-          createdAt: data.createdAt || "",
-          date: data.date || "",
-          reminderID: data.reminderID || "",
-          reminderOn: data.reminderOn || "",
-          sound: data.sound || "",
-          time: data.time || "",
-          title: data.title || "",
-          userID: data.userID || "",
-        };
-      });
-
-      console.log('Current user ID:', currentUser.uid);
-      console.log('Fetched reminders:', reminders);
-      setUserReminders(reminders);
-    } catch (error) {
-      console.error("Error fetching reminders:", error);
-      Alert.alert("Error", "Failed to fetch reminders");
-    }
-  };
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        fetchUserReminders();
-      } else {
-        setUserReminders([]); // Clear reminders when user logs out
-      }
-    });
-
-    return () => unsubscribe(); // Cleanup subscription
-  }, []);
 
   return (
     <>
@@ -446,7 +398,10 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
             style={[styles.modalContent, { backgroundColor: '#E0F4F4' }]}
           >
             <FlatList
-              data={categories}
+              data={categories.map(category => ({
+                id: category,
+                name: category
+              }))}
               renderItem={renderCategoryItem}
               keyExtractor={(item) => item.id}
               contentContainerStyle={{ padding: 10 }}
