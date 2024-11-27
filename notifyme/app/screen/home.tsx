@@ -80,7 +80,7 @@ const HomeScreen = () => {
     return (
       <>
         {isRemindersExpanded && (
-          <View style={styles.remindersList}>
+          <ScrollView style={styles.remindersList}>
             {reminders.map((reminder: {
               title: ReactNode;
               date: ReactNode;
@@ -107,7 +107,7 @@ const HomeScreen = () => {
                 </View>
               </View>
             ))}
-          </View>
+          </ScrollView>
         )}
       </>
     );

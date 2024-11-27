@@ -123,10 +123,37 @@ const styles = StyleSheet.create({
   remindersContainer: {
     flex: 1,
     marginBottom: 20,
-    width: '100%'
+    width: '90%', // Take up most of the width but not all
+    maxHeight: 400, // Set a maximum height for the container
+    backgroundColor: '#C5DEE3',
+    borderRadius: 15,
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 
+  remindersList: {
+    width: '100%',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
 
+  reminderItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#A8D8E4',
+    backgroundColor: '#FFFFFF',
+    marginVertical: 5,
+    borderRadius: 8,
+  },
 
   bottomTabBar: {
     flexDirection: 'row',
@@ -349,45 +376,28 @@ const styles = StyleSheet.create({
     height: 30
   },
 
-
-
-
-
-
-
-  remindersList: {
-    width: '100%',
-    height: '50%',
-    backgroundColor: '#C5DEE3',
-
-  },
-  reminderItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  
   checkboxContainer: {
-    marginRight: 10,
+    marginRight: 15,
   },
   
   checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#666',
+    borderColor: '#0B6477',
+    backgroundColor: '#FFFFFF',
   },
   
   reminderTextContainer: {
     flex: 1,
+    paddingVertical: 5,
   },
   
   reminderTitle: {
     fontSize: 16,
     color: '#333',
+    fontWeight: '500',
   },
   
   reminderDateTime: {
@@ -398,19 +408,20 @@ const styles = StyleSheet.create({
   
   reminderActions: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 12,
+    paddingLeft: 10,
   },
   
   starButton: {
-    padding: 5,
+    padding: 8,
   },
   
   calendarButton: {
-    padding: 5,
+    padding: 8,
   },
   
   deleteButton: {
-    padding: 5,
+    padding: 8,
   },
 
 
