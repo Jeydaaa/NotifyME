@@ -124,17 +124,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginBottom: 20,
     width: '90%', // Take up most of the width but not all
-    maxHeight: 400, // Set a maximum height for the container
-    backgroundColor: '#C5DEE3',
+    maxHeight: 250, // Set a maximum height for the container
     borderRadius: 15,
     alignSelf: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
     elevation: 5,
   },
 
@@ -147,7 +139,7 @@ const styles = StyleSheet.create({
   reminderItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
+    padding: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#A8D8E4',
     backgroundColor: '#FFFFFF',

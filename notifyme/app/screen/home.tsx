@@ -31,7 +31,7 @@ const HomeScreen = () => {
       remindersQuery = query(
         collection(db, "reminders"),
         where("userID", "==", currentUser.uid),
-        where("category", "==", activeTab)
+        where("categoryID", "==", activeTab)
       );
     }
 
