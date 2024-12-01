@@ -93,18 +93,20 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    
   },
   categoryItemText: {
     fontSize: 16,
     color: '#333',
   },
   createNewButton: {
-    paddingVertical: 10,
-    marginTop: 10,
+    padding: 10, 
+    alignItems: 'center',
+    borderRadius: 5, // Optional: Add rounded corners
   },
   createNewButtonText: {
-    color: '#A8D8E4',
-    fontSize: 16,
+    color: '#000', // Set text color to black
+    fontSize: 14, // Adjust font size to make it smaller
   },
   closeButton: {
     position: 'absolute',
@@ -147,6 +149,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     marginTop: 10,
+    
   },
   categoryInput: {
     borderWidth: 1,
@@ -154,11 +157,23 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 20,
+    
   },
+  flatList: {
+    maxHeight: '70%', // Set max height for FlatList
+  },
+  flatListContent: {
+    paddingBottom: 10,
+  },
+ 
+
+
   saveButton: {
     alignSelf: 'flex-end',
     paddingVertical: 8,
     paddingHorizontal: 20,
+    backgroundColor:'#C5DEE3',
+    borderRadius: 30,
   },
   saveButtonText: {
     color: '#000',
@@ -523,6 +538,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+
+
+
+
+
 });
 
 

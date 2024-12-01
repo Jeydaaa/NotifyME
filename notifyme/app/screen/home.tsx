@@ -1,12 +1,13 @@
 import React, { useState, useEffect, ReactNode } from 'react';
 import { View, Text, TouchableOpacity, Image, Animated, ScrollView } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import styles from '../styles/homestyles';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import AddReminder from './addreminder';
 import { collection, onSnapshot, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
 import { UserCredential } from 'firebase/auth';
+
 
 const HomeScreen = () => {
   const [activeTab, setActiveTab] = useState('All');
@@ -16,6 +17,8 @@ const HomeScreen = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRemindersExpanded, setIsRemindersExpanded] = useState(false);
   const [reminders, setReminders] = useState([]);
+  const [isMoreOptionsExpanded, setIsMoreOptionsExpanded] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const currentUser = auth.currentUser;
@@ -31,7 +34,7 @@ const HomeScreen = () => {
       remindersQuery = query(
         collection(db, "reminders"),
         where("userID", "==", currentUser.uid),
-        where("category", "==", activeTab)
+        where("categoryID", "==", activeTab)
       );
     }
 
@@ -56,7 +59,7 @@ const HomeScreen = () => {
   const categories = [
     { name: 'All', count: 0 },
     { name: 'Work', count: 0 },
-    { name: 'B-day', count: 0 },
+    { name: 'Birthday', count: 0 },
     { name: 'Occasion', count: 0 },
     { name: 'Special', count: 0 },
   ];
@@ -71,7 +74,7 @@ const HomeScreen = () => {
         <View style={styles.emptyStateContainer}>
           <Text style={styles.emptyStateText}>
             No reminder in this category{'\n'}
-            click "+" to create your task.
+            click "+" to create your reminder.
           </Text>
         </View>
       );
@@ -112,7 +115,6 @@ const HomeScreen = () => {
       </>
     );
   };
-
   const handleAddReminder = () => {
     setIsExpanded(true);
   };
@@ -163,7 +165,7 @@ const HomeScreen = () => {
           style={styles.tabScrollView}
           contentContainerStyle={styles.tabScrollContent}
         >
-          {['All', 'Work', 'B-day', 'Occasion', 'Special'].map((tab) => (
+          {['All', 'Work', 'Birthday', 'Occasion', 'Special'].map((tab) => (
             <TouchableOpacity 
               key={tab} 
               style={[
@@ -182,9 +184,20 @@ const HomeScreen = () => {
           ))}
         </ScrollView>
 
-        <TouchableOpacity style={styles.moreOptionsButton}>
+        <TouchableOpacity style={styles.moreOptionsButton} onPress={() => setIsMoreOptionsExpanded(!isMoreOptionsExpanded)}>
           <Image source={require('../screen/images/menu-vertical.png')} style={styles.moreOptionsIcon} />
         </TouchableOpacity>
+
+        {isMoreOptionsExpanded && (
+          <View style={styles.moreOptionsList}>
+          <TouchableOpacity
+            style={styles.moreOptionItem}
+            onPress={() => router.push('/screen/categories')} // Navigate to the Categories screen
+          >
+            <Text style={styles.moreOptionText}>See All Categories</Text>
+          </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       {/* Reminders Section */}
@@ -282,20 +295,24 @@ const HomeScreen = () => {
                   <FontAwesome5 name="plus" size={18} color="black" solid />
                   <Text style={styles.categoryText}>Create New</Text>
                 </TouchableOpacity>
+
+                {/* See All Categories Button */}
+                <TouchableOpacity style={styles.categoryItem}>
+                  <Text style={styles.categoryText}>See All Categories</Text>
+                </TouchableOpacity>
               </View>
             )}
-
             {/* Star Reminder Button */}
-            <TouchableOpacity style={styles.sidebarButton}>
+            <Link href="/screen/StarReminder" style={styles.sidebarButton}>
               <FontAwesome5 name="star" size={22} color="black" solid />
               <Text style={styles.sidebarButtonText}>Star Reminder</Text>
-            </TouchableOpacity>
+            </Link>
 
             {/* Themes Button */}
-            <TouchableOpacity style={styles.sidebarButton}>
+            <Link href="/screen/theme" style={styles.sidebarButton}>
               <FontAwesome5 name="palette" size={22} color="black" solid />
               <Text style={styles.sidebarButtonText}>Themes</Text>
-            </TouchableOpacity>
+            </Link>
 
             {/* FAQ Button */}
             <TouchableOpacity style={styles.sidebarButton}>

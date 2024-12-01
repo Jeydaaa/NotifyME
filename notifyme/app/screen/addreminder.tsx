@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Animated, Modal, FlatList, Image, Platform, Switch } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Animated, Modal, FlatList, Image, Platform, Switch, GestureResponderEvent } from 'react-native';
 import styles from '../styles/addreminderstyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from 'date-fns';
@@ -51,7 +51,8 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
   const [reminderTitle, setReminderTitle] = useState('');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [userReminders, setUserReminders] = useState<Reminder[]>([]);
-  const [category, setCategory] = useState('');
+  const builtInCategories = ['Work', 'Birthday', 'Occasion', 'Special'];
+  const [categories, setCategories] = useState<string[]>(builtInCategories);
 
   const notificationSounds = [
     { id: '1', name: 'Default', soundFile: 'default_sound' },
@@ -59,7 +60,27 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
     { id: '3', name: 'Chime', soundFile: 'chime_sound' },
   ];
 
-  const categories = ['Work', 'B-day', 'Occasion', 'Special'];
+  // Fetch categories from Firestore on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const currentUser = auth.currentUser;
+        if (!currentUser) return;
+
+        const categoriesRef = collection(db, 'categories');
+        const q = query(categoriesRef, where("userID", "==", currentUser.uid));
+        const querySnapshot = await getDocs(q);
+
+        const fetchedCategories = querySnapshot.docs.map(doc => doc.data().name);
+        setCategories(prevCategories => [...builtInCategories, ...fetchedCategories]);
+        console.log('Fetched Categories:', fetchedCategories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []); // Empty dependency array to run only on mount
 
   const toggleReminder = () => {
     const toValue = isExpanded ? 0 : 1;
@@ -86,12 +107,12 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
     setIsCategoryModalVisible(false);
   };
 
-  const renderCategoryItem = ({ item }: { item: { id: string, name: string } }) => (
+  const renderCategoryItem = ({ item }: { item: string }) => (
     <TouchableOpacity
       style={styles.categoryItem}
-      onPress={() => handleCategorySelect(item)}
+      onPress={() => handleCategorySelect({ id: item, name: item })}
     >
-      <Text style={styles.categoryItemText}>{item.name}</Text>
+      <Text style={styles.categoryItemText}>{item}</Text>
     </TouchableOpacity>
   );
 
@@ -293,35 +314,62 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
       // Add document to reminders collection
       await addDoc(remindersRef, reminderData);
 
-      // Show success message and reset form
-      Alert.alert(
-        'Success',
-        'Your reminder has been saved successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              setReminderTitle('');
-              setSelectedCategory('');
-              setSelectedDate('');
-              setSelectedTime('');
-              setIsReminderOn(false);
-              setSelectedSound('Default');
-              toggleReminder();
-            }
-          }
-        ]
-      );
-
+      console.log('Reminder saved');
+      setIsExpanded(false); // Close the reminder screen
+      // Reset form fields
+      setReminderTitle('');
+      setSelectedCategory('');
+      setSelectedDate('');
+      setSelectedTime('');
+      setIsReminderOn(false);
+      setSelectedSound('Default');
+      toggleReminder();
+      
     } catch (error) {
       console.error('Error saving reminder:', error);
       Alert.alert('Error', 'Failed to save reminder. Please try again.');
     }
   };
 
+  const handleCreateCategory = async (event: GestureResponderEvent): Promise<void> => {
+    try {
+      const currentUser = auth.currentUser;
 
+      if (!currentUser) {
+        Alert.alert('Error', 'Please login first');
+        return;
+      }
 
- 
+      if (!newCategoryName) {
+        Alert.alert('Error', 'Please enter a category name');
+        return;
+      }
+
+      // Create category data object
+      const categoryData = {
+        name: newCategoryName,
+        userID: currentUser.uid,
+        createdAt: new Date().toISOString()
+      };
+
+      // Add document to categories collection
+      const categoriesRef = collection(db, 'categories');
+      await addDoc(categoriesRef, categoryData);
+
+      // Update local state to include the new category
+      setCategories(prevCategories => [...prevCategories, newCategoryName]);
+
+      // Reset new category name
+      setNewCategoryName('');
+      toggleCreateCategoryModal();
+
+      Alert.alert('Success', 'Category created successfully!');
+
+    } catch (error) {
+      console.error('Error creating category:', error);
+      Alert.alert('Error', 'Failed to create category. Please try again.');
+    }
+  };
 
   return (
     <>
@@ -395,22 +443,20 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
           <TouchableOpacity 
             activeOpacity={1} 
             onPress={(e) => e.stopPropagation()}
-            style={[styles.modalContent, { backgroundColor: '#E0F4F4' }]}
+            style={styles.modalContent}
           >
             <FlatList
-              data={categories.map(category => ({
-                id: category,
-                name: category
-              }))}
+              data={categories}
               renderItem={renderCategoryItem}
-              keyExtractor={(item) => item.id}
-              contentContainerStyle={{ padding: 10 }}
+              keyExtractor={(item) => item}
+              contentContainerStyle={styles.flatListContent}
+              style={styles.flatList}
               ListFooterComponent={
                 <TouchableOpacity 
-                  style={[styles.createNewButton, { flexDirection: 'row', alignItems: 'center' }]}
+                  style={styles.createNewButton}
                   onPress={toggleCreateCategoryModal}
                 >
-                  <Text style={[styles.createNewButtonText, { color: '#333' }]}>+ Create new</Text>
+                  <Text style={styles.createNewButtonText}>+ Create new</Text>
                 </TouchableOpacity>
               }
             />
@@ -452,11 +498,7 @@ const AddReminder = ({ isExpanded, setIsExpanded }: AddReminderProps) => {
             
             <TouchableOpacity 
               style={styles.saveButton}
-              onPress={() => {
-                console.log('Saving category:', newCategoryName);
-                setNewCategoryName('');
-                toggleCreateCategoryModal();
-              }}
+              onPress={handleCreateCategory}
             >
               <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
