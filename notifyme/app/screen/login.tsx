@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import styles from '../styles/loginstyles';
-import { supabase } from '../../supabase';
-
+import { auth } from '../../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -12,23 +14,26 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles') // Change this if your user table is named differently
-        .select('*')
-        .or(`email.eq.${email}, username.eq.${email}`)
-        .single();
-
-      if (error) {
-        console.error('Login error:', error);
-        alert('Invalid credentials');
-        return;
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      if (user) {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          console.log('User Data:', userData);
+          
+          alert('Login successful!');
+          router.push('/screen/home');
+        } else {
+          alert('User profile not found in database');
+        }
       }
-
-      // If successful, navigate to the home screen (Reminders tab)
-      router.push('/screen/home'); // Adjust the route to match your home screen path
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      alert('Something went wrong. Please try again.');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      alert(error.message || 'Invalid email or password');
     }
   };
 
@@ -60,14 +65,21 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
-      </TouchableOpacity>
-      <Link href="/screen/register">
-        <Text style={styles.createAccount}>
-          Don’t have an account? <Text style={styles.createLink}>Create here</Text>
-        </Text>
-      </Link>
+      
+      {/* Add spacing by using separate View containers */}
+      <View style={{ marginVertical: 20 }}>
+        <Link href="/screen/password">
+          <Text style={styles.forgotPassword}>Forgot Password?</Text>
+        </Link>
+      </View>
+
+      <View style={{ marginTop: 50 }}>
+        <Link href="/screen/register">
+          <Text style={styles.createAccount}>
+            Don’t have an account? <Text style={styles.createLink}>Create here</Text>
+          </Text>
+        </Link>
+      </View>
     </View>
   );
 };
